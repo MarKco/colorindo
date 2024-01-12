@@ -7,24 +7,39 @@
     android:layout_height="match_parent"
     tools:context="it.marcozanetti.colorindo.MainActivity">
 
-    <TextView
-        android:id="@+id/editableText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/suez_one"
-        android:text="COLORINDO"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-        android:textSize="160dp"
-        app:layout_constraintBottom_toTopOf="@+id/changeBackgroundColorButton"
+    <ImageButton
+        android:id="@+id/changeTextButton"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:src="@drawable/format_size"
+        android:scaleType="fitCenter"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/editableText"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:autoSizeMaxTextSize="300sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeStepGranularity="2sp"
+        android:autoSizeTextType="uniform"
+        android:fontFamily="@font/suez_one"
+        android:maxLines="1"
+        tools:text="COLORINDO"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@+id/changeBackgroundColorButton"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/changeTextButton" />
 
     <ImageButton
         android:id="@+id/changeBackgroundColorButton"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:src="@drawable/palette"
+        android:src="@mipmap/background_color"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/changeTextColorButton"
         app:layout_constraintHorizontal_bias="0.5"
@@ -34,7 +49,8 @@
         android:id="@+id/changeTextColorButton"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:src="@drawable/format_size"
+        android:src="@mipmap/text_color"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

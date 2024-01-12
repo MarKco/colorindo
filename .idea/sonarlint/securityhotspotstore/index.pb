@@ -15,3 +15,7 @@ l
 <app/src/test/java/it/marcozanetti/appelia/ExampleUnitTest.kt,0/c/0c3cd95072d8eb56f50dadc8618d0f64ef325bf5
 P
  app/src/main/AndroidManifest.xml,8/c/8c55c3ccc257e5907959013f99656e4c8ec3903e
+}
+Mapp/src/androidTest/java/it/marcozanetti/colorindo/ExampleInstrumentedTest.kt,7/9/79ae1a56b7e36d124cdc4f0f8fade89a0318de3c
+l
+<app/src/main/java/it/marcozanetti/colorindo/MainViewModel.kt,2/5/25e10b896822cc983c854dbfc9e09802e9360a89

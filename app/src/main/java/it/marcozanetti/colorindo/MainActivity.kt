@@ -1,17 +1,25 @@
 package it.marcozanetti.colorindo
 
 import android.graphics.Color
+import android.graphics.text.LineBreaker
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.InputFilter.AllCaps
+import android.text.SpannableStringBuilder
+import android.text.TextWatcher
 import android.util.Log
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.ColorUtils
+import androidx.lifecycle.ViewModelProvider
 import eltos.simpledialogfragment.SimpleDialog
 import eltos.simpledialogfragment.color.SimpleColorDialog
 import eltos.simpledialogfragment.color.SimpleColorDialog.COLORFUL_COLOR_PALLET
-import it.marcozanetti.appelia.R
 import java.util.*
 
 
@@ -21,23 +29,38 @@ class MainActivity : AppCompatActivity(), SimpleDialog.OnDialogResultListener {
     private val editableText: TextView by lazy { findViewById(R.id.editableText) }
     private val changeBackgroundColorButton: ImageButton by lazy { findViewById(R.id.changeBackgroundColorButton) }
     private val changeTextColorButton: ImageButton by lazy { findViewById(R.id.changeTextColorButton) }
+    private val changeTextButton: ImageButton by lazy { findViewById(R.id.changeTextButton) }
 
     private val BACKGROUND_COLOR: String = "BACKGROUND_COLOR"
     private val TEXT_COLOR: String = "TEXT_COLOR"
+    private val TEXT_CONTENT: String = "TEXT_CONTENT"
+
+    lateinit var viewModel: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        background.setBackgroundColor(getRandomColor())
-        editableText.setTextColor(getRandomColor())
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+        viewModel.backgroundColor.observeForever {
+            background.setBackgroundColor(ColorUtils.blendARGB(editableText.solidColor, it, 1.0f))
+        }
+
+        viewModel.textColor.observeForever {
+            editableText.setTextColor(ColorUtils.blendARGB(editableText.solidColor, it, 1.0f))
+        }
+
+        background.setBackgroundColor(viewModel.backgroundColor.value!!)
+        editableText.setTextColor(viewModel.textColor.value!!)
+        editableText.text = viewModel.textToDisplay.value
 
         background.setOnClickListener {
-            background.setBackgroundColor(ColorUtils.blendARGB(background.solidColor, getRandomColor(), 1.0f));
+            viewModel.setBackgroundToRandomColor()
         }
 
         editableText.setOnClickListener {
-            editableText.setTextColor(ColorUtils.blendARGB(editableText.solidColor, getRandomColor(), 1.0f));
+            viewModel.setTextColorToRandomColor()
         }
 
         changeBackgroundColorButton.setOnClickListener {
@@ -47,12 +70,14 @@ class MainActivity : AppCompatActivity(), SimpleDialog.OnDialogResultListener {
         changeTextColorButton.setOnClickListener {
             getColor(TEXT_COLOR)
         }
-    }
 
-    private fun getRandomColor(): Int {
-        val rnd = Random()
-        val color: Int = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-        return color
+        changeTextButton.setOnClickListener {
+            //Shows a dialog with a text field pre-filled with the current text and allowing the user to change it
+            showTextChangeDialog {
+                viewModel.changeText(it)
+                editableText.text = it
+            }
+        }
     }
 
     private fun getColor(tag: String) {
@@ -65,14 +90,41 @@ class MainActivity : AppCompatActivity(), SimpleDialog.OnDialogResultListener {
             .show(this, tag)
     }
 
+    private fun showTextChangeDialog(updateText: (String) -> Unit) {
+        val updatedText = EditText(this).apply {
+            filters = arrayOf<InputFilter>(AllCaps())
+            //select all on focus
+            setOnFocusChangeListener { v, hasFocus ->
+                if (hasFocus) {
+                    selectAll()
+                }
+            }
+            setSelectAllOnFocus(true)
+            setLines(1)
+            maxLines = 1
+            setSingleLine()
+            setText(viewModel.textToDisplay.value)
+        }
+
+        AlertDialog.Builder(this)
+            .setMessage("SCEGLI LA PAROLA")
+            .setView(updatedText)
+            .setPositiveButton("OK") { dialog, whichButton ->
+                val updatedTextFromDialog: String = updatedText.text.toString()
+                updateText(updatedTextFromDialog)
+            }
+            .show()
+
+    }
+
     override fun onResult(dialogTag: String, which: Int, extras: Bundle): Boolean {
         when(dialogTag) {
             BACKGROUND_COLOR -> {
-                background.setBackgroundColor(ColorUtils.blendARGB(background.solidColor, extras.getInt(SimpleColorDialog.COLOR), 1.0f));
+                viewModel.changeBackgroundColor(extras.getInt(SimpleColorDialog.COLOR))
                 return true
             }
             TEXT_COLOR -> {
-                editableText.setTextColor(ColorUtils.blendARGB(editableText.solidColor, extras.getInt(SimpleColorDialog.COLOR), 1.0f));
+                viewModel.changeTextColor(extras.getInt(SimpleColorDialog.COLOR))
                 return true
             }
             else ->
