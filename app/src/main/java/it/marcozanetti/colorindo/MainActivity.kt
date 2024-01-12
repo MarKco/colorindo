@@ -1,13 +1,9 @@
 package it.marcozanetti.colorindo
 
 import android.graphics.Color
-import android.graphics.text.LineBreaker
 import android.os.Bundle
-import android.text.Editable
 import android.text.InputFilter
 import android.text.InputFilter.AllCaps
-import android.text.SpannableStringBuilder
-import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import android.widget.ImageButton
@@ -20,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import eltos.simpledialogfragment.SimpleDialog
 import eltos.simpledialogfragment.color.SimpleColorDialog
 import eltos.simpledialogfragment.color.SimpleColorDialog.COLORFUL_COLOR_PALLET
-import java.util.*
 
 
 class MainActivity : AppCompatActivity(), SimpleDialog.OnDialogResultListener {
