@@ -1,4 +1,4 @@
-package it.marcozanetti.appelia
+package it.marcozanetti.colorindo
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("it.marcozanetti.appelia", appContext.packageName)
+        assertEquals("it.marcozanetti.colorindo", appContext.packageName)
     }
 }

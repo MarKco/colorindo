@@ -7,9 +7,9 @@ android {
     compileSdk 30
 
     defaultConfig {
-        applicationId "it.marcozanetti.appelia"
+        applicationId "it.marcozanetti.colorindo"
         minSdk 24
-        targetSdk 30
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 

@@ -5,14 +5,14 @@
     android:id="@+id/backgroundLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="it.marcozanetti.colorindo.MainActivity">
 
     <TextView
-        android:id="@+id/eliaText"
+        android:id="@+id/editableText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/suez_one"
-        android:text="ELIA"
+        android:text="COLORINDO"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textSize="160dp"
         app:layout_constraintBottom_toTopOf="@+id/changeBackgroundColorButton"

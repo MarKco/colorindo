@@ -1,4 +1,4 @@
-package it.marcozanetti.appelia
+package it.marcozanetti.colorindo
 
 import org.junit.Test
 
