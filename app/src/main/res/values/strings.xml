@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Colorindo</string>
-    <string name="pick_a_color">Scegli un colore</string>
-    <string name="change_text">Cambia il testo</string>
+    <string name="pick_a_color">Choose a color</string>
+    <string name="change_text">Change text</string>
 </resources>
