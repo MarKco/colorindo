@@ -1,10 +1,14 @@
 package it.marcozanetti.colorindo
 
+import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import java.util.Random
+
 
 class MainViewModel : ViewModel() {
 
@@ -47,6 +51,28 @@ class MainViewModel : ViewModel() {
     val rnd = Random()
     val color: Int = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
     return color
+  }
+
+  fun storeValuesToSharedPrefs(context: Context) {
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("ColorindoSharedPrefs", MODE_PRIVATE)
+    val myEdit = sharedPreferences.edit()
+
+    myEdit.putString("textToDisplay", textToDisplay.value)
+    backgroundColor.value?.let { myEdit.putInt("backgroundColor", it) }
+    textColor.value?.let { myEdit.putInt("textColor", it) }
+
+    myEdit.apply()
+  }
+
+  fun retrieveValuesFromSharedPrefs(context: Context) {
+    val sharedPreferences: SharedPreferences = context.getSharedPreferences("ColorindoSharedPrefs", MODE_PRIVATE)
+    val textToDisplay = sharedPreferences.getString("textToDisplay", "COLORINDO")
+    val backgroundColor = sharedPreferences.getInt("backgroundColor", getRandomColor())
+    val textColor = sharedPreferences.getInt("textColor", getRandomColor())
+
+    _textToDisplay.value = textToDisplay
+    _backgroundColor.value = backgroundColor
+    _textColor.value = textColor
   }
 
 }

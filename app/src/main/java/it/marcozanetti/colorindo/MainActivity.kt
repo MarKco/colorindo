@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity(), SimpleDialog.OnDialogResultListener {
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        viewModel.retrieveValuesFromSharedPrefs(this)
 
         viewModel.backgroundColor.observeForever {
             background.setBackgroundColor(ColorUtils.blendARGB(editableText.solidColor, it, 1.0f))
@@ -126,5 +127,10 @@ class MainActivity : AppCompatActivity(), SimpleDialog.OnDialogResultListener {
                 Log.d("Colorindo", "Didn't expect to end up here")
         }
         return false
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.storeValuesToSharedPrefs(this)
     }
 }
