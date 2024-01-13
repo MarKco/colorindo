@@ -19,3 +19,5 @@ P
 Mapp/src/androidTest/java/it/marcozanetti/colorindo/ExampleInstrumentedTest.kt,7/9/79ae1a56b7e36d124cdc4f0f8fade89a0318de3c
 l
 <app/src/main/java/it/marcozanetti/colorindo/MainViewModel.kt,2/5/25e10b896822cc983c854dbfc9e09802e9360a89
+A
+gradle.properties,2/a/2afbb999f001938c88fa43fc2ef52abf0f8213e4
