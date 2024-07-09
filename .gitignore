@@ -1,15 +1,67 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Eclipse project files
+.classpath
+.project
+
+# Windows thumbnail db
+Thumbs.db
+
+# OSX files
 .DS_Store
-/build
+
+# Old-style IDEA project files
+*.ipr
+*.iws
+
+# Sandbox stuff
+_sandbox
+
+# Gradle cache
+.gradle
+
+# Android Studio
+*.iml
+build
 /captures
 .externalNativeBuild
-.cxx
-local.properties
+
+# remove # and deleteClicked .idea if it better suit your needs.
+.idea/*
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/dictionaries
+.idea/libraries
+.idea/jarRepositories.xml
+# Android Studio 3 in .gitignore file.
+.idea/caches
+.idea/modules.xml
+# Comment next line if keeping position of elements in Navigation Editor is relevant for you
+.idea/navEditor.xml
+.idea/kotlinCodeInsightSettings.xml
+.idea/codeStyles/Project.xml
+.idea/shelf
+!.idea/runConfigurations
+gradle/report.txt
+proguard-config.txt
+vendor
+
+#materiale per play store
+materiale_per_play_store/
