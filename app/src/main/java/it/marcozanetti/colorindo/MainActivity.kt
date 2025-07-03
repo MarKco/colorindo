@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FontDownload
 import androidx.compose.material.icons.filled.FormatColorText
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -123,6 +124,7 @@ class MainActivity : ComponentActivity() {
                         val vNorm = v / 1.0f
                         return if (vNorm <= 0.03928) vNorm / 12.92 else Math.pow(((vNorm + 0.055) / 1.055), 2.4)
                     }
+
                     val l1 = 0.2126 * channel(c1.red) + 0.7152 * channel(c1.green) + 0.0722 * channel(c1.blue)
                     val l2 = 0.2126 * channel(c2.red) + 0.7152 * channel(c2.green) + 0.0722 * channel(c2.blue)
                     val lighter = maxOf(l1, l2)
@@ -161,6 +163,8 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
+                        val context = LocalContext.current
+
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier
@@ -194,45 +198,52 @@ class MainActivity : ComponentActivity() {
                                     tint = iconTint
                                 )
                             }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            IconButton(onClick = { viewModel.resetAll(context = context) }, modifier = Modifier.size(64.dp)) {
+                                Icon(
+                                    imageVector = Icons.Filled.Restore,
+                                    contentDescription = "Reset",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = iconTint
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .verticalScroll(rememberScrollState()),
                             contentAlignment = Alignment.Center
                         ) {
                             val minFontSize = 24.sp
                             val maxFontSize = 96.sp
                             val lineHeight = ((minFontSize.value + maxFontSize.value) / 2 * 1.5f).sp
-                            Column(
-                                modifier = Modifier.verticalScroll(rememberScrollState())
-                            ) {
-                                BasicText(
-                                    text = if (isUppercase) textToDisplay.uppercase() else textToDisplay.lowercase(),
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                        .clickable(
-                                            enabled = true,
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        ) {
-                                            viewModel.setTextColorToRandomColor()
-                                        },
-                                    style = LocalTextStyle.current.copy(
-                                        color = Color(textColor),
-                                        fontFamily = selectedFontFamily,
-                                        textAlign = TextAlign.Center,
-                                        platformStyle = PlatformTextStyle(
-                                            includeFontPadding = false
-                                        ),
-                                        lineHeight = lineHeight,
+                            BasicText(
+                                text = if (isUppercase) textToDisplay.uppercase() else textToDisplay.lowercase(),
+                                modifier = Modifier
+                                    .padding(horizontal = 8.dp)
+                                    .clickable(
+                                        enabled = true,
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        viewModel.setTextColorToRandomColor()
+                                    },
+                                style = LocalTextStyle.current.copy(
+                                    color = Color(textColor),
+                                    fontFamily = selectedFontFamily,
+                                    textAlign = TextAlign.Center,
+                                    platformStyle = PlatformTextStyle(
+                                        includeFontPadding = false
                                     ),
-                                    autoSize = TextAutoSize.StepBased(
-                                        minFontSize = minFontSize,
-                                        maxFontSize = maxFontSize
-                                    )
+                                    lineHeight = lineHeight,
+                                ),
+                                autoSize = TextAutoSize.StepBased(
+                                    minFontSize = minFontSize,
+                                    maxFontSize = maxFontSize
                                 )
-                            }
+                            )
                         }
                         Row(
                             modifier = Modifier

@@ -62,9 +62,28 @@ class MainViewModel(
     savedStateHandle[UPPERCASE_KEY] = value
   }
 
+  fun resetAll(context: Context? = null) {
+    _textToDisplay.value = getRandomFiveLetterWord()
+    setSelectedFontIndex(1) // Suez (assuming it's the 2th in your fontOptions list)
+    _backgroundColor.value = 0xFFBBDEFB.toInt() // Light blue
+    _textColor.value = 0xFFFFA000.toInt() // Dark yellow
+    setIsUppercase(true)
+    context?.let { storeValuesToSharedPrefs(it) }
+  }
+
   private fun getRandomColor(): Int {
     val rnd = Random()
     return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+  }
+
+  private fun getRandomFiveLetterWord(): String {
+    val fiveLetterWords = listOf(
+      "AMORE", "BELLE", "CANTO", "DOLCE", "ESTATE", "FIORE", "GIOIA", "HOTEL", "ITALIA", "LAGO",
+      "MARE", "NOTTE", "OCEANO", "PACE", "FESTA", "RADIO", "SOLE", "TERRA", "UNITA", "VITA",
+      "ZONA", "ALBA", "BOSCO", "CASA", "PIZZA", "FESTA", "GATTO", "ACQUA", "MUSICA", "NUVOLA",
+      "OPERA", "PIANO", "QUIETO", "ROMA", "SERRA", "TEMPO", "GIOIA", "VERDE", "FELICE", "RESPIRO"
+    )
+    return fiveLetterWords.random()
   }
 
   fun storeValuesToSharedPrefs(context: Context) {
