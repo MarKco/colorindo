@@ -40,6 +40,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
@@ -62,6 +65,8 @@ class MainActivity : ComponentActivity() {
                 var showTextDialog by remember { mutableStateOf(false) }
                 var showBackgroundColorDialog by remember { mutableStateOf(false) }
                 var showTextColorDialog by remember { mutableStateOf(false) }
+
+                val balooTamma = FontFamily(Font(R.font.baloo_tamma, FontWeight.Normal))
 
                 Box(
                     modifier = Modifier
@@ -100,6 +105,7 @@ class MainActivity : ComponentActivity() {
                                 text = textToDisplay,
                                 color = Color(textColor),
                                 fontSize = 48.sp,
+                                fontFamily = balooTamma,
                                 modifier = Modifier
                                     .clickable(
                                         indication = null,
