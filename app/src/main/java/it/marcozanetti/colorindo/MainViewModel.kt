@@ -65,6 +65,7 @@ class MainViewModel(
     myEdit.putString("textToDisplay", textToDisplay.value)
     myEdit.putInt("backgroundColor", backgroundColor.value)
     myEdit.putInt("textColor", textColor.value)
+    myEdit.putInt("fontIndex", selectedFontIndex.value)
 
     myEdit.apply()
   }
@@ -74,10 +75,12 @@ class MainViewModel(
     val textToDisplay = sharedPreferences.getString("textToDisplay", "COLORINDO") ?: "COLORINDO"
     val backgroundColor = sharedPreferences.getInt("backgroundColor", getRandomColor())
     val textColor = sharedPreferences.getInt("textColor", getRandomColor())
+    val fontIndex = sharedPreferences.getInt("fontIndex", 0)
 
     _textToDisplay.value = textToDisplay
     _backgroundColor.value = backgroundColor
     _textColor.value = textColor
+    setSelectedFontIndex(fontIndex)
   }
 }
 
