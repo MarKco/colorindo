@@ -108,7 +108,7 @@ class MainActivity : ComponentActivity() {
                     "Indie Flower" to FontFamily(Font(R.font.indie_flower)),
                     "Raleway" to FontFamily(Font(R.font.raleway))
                 )
-                var selectedFontIndex by remember { mutableStateOf(0) }
+                val selectedFontIndex by viewModel.selectedFontIndex.collectAsState()
                 val selectedFontFamily = fontOptions[selectedFontIndex].second
 
                 // Contrast ratio calculation (WCAG)
@@ -301,7 +301,7 @@ class MainActivity : ComponentActivity() {
                                         Modifier
                                             .fillMaxWidth()
                                             .clickable {
-                                                selectedFontIndex = idx
+                                                viewModel.setSelectedFontIndex(idx)
                                                 showFontDialog = false
                                             }
                                             .padding(vertical = 0.5.dp),
@@ -310,7 +310,7 @@ class MainActivity : ComponentActivity() {
                                         RadioButton(
                                             selected = idx == selectedFontIndex,
                                             onClick = {
-                                                selectedFontIndex = idx
+                                                viewModel.setSelectedFontIndex(idx)
                                                 showFontDialog = false
                                             }
                                         )
