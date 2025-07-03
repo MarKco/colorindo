@@ -39,6 +39,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +47,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -54,7 +57,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -258,25 +261,32 @@ class MainActivity : ComponentActivity() {
                 }
 
                 if (showTextDialog) {
-                    var input by remember { mutableStateOf(textToDisplay) }
+                    var input by remember { mutableStateOf(TextFieldValue(textToDisplay)) }
+                    val focusRequester = remember { FocusRequester() }
                     AlertDialog(
                         onDismissRequest = { showTextDialog = false },
-                        title = { Text("SCEGLI LA PAROLA") },
+                        title = { Text("SCRIVI IL TUO TESTO") },
                         text = {
+                            LaunchedEffect(Unit) {
+                                focusRequester.requestFocus()
+                                input = input.copy(selection = androidx.compose.ui.text.TextRange(0, input.text.length))
+                            }
                             OutlinedTextField(
                                 value = input,
-                                onValueChange = { input = it.uppercase() },
-                                singleLine = true,
-                                keyboardOptions = KeyboardOptions(
-                                    capitalization = KeyboardCapitalization.Characters,
-                                    imeAction = ImeAction.Done
-                                ),
-                                modifier = Modifier.fillMaxWidth()
+                                onValueChange = { input = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .focusRequester(focusRequester),
+                                minLines = 3,
+                                maxLines = 6,
+                                singleLine = false,
+                                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Default),
                             )
                         },
                         confirmButton = {
                             TextButton(onClick = {
-                                viewModel.changeText(input)
+                                viewModel.changeText(input.text)
                                 showTextDialog = false
                             }) { Text("OK") }
                         },
