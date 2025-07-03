@@ -125,14 +125,16 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val bgColor = Color(backgroundColor)
-                val accessiblePalette = iconPalette.filter { contrastRatio(it, bgColor) >= 3.0 }
-                val iconTint = if (accessiblePalette.isNotEmpty()) {
-                    accessiblePalette[Random.nextInt(accessiblePalette.size)]
-                } else {
-                    // Fallback: pick black or white, whichever is more accessible
-                    val whiteContrast = contrastRatio(Color.White, bgColor)
-                    val blackContrast = contrastRatio(Color.Black, bgColor)
-                    if (whiteContrast > blackContrast) Color.White else Color.Black
+                val iconTint = remember(backgroundColor) {
+                    val accessiblePalette = iconPalette.filter { contrastRatio(it, bgColor) >= 3.0 }
+                    if (accessiblePalette.isNotEmpty()) {
+                        accessiblePalette[Random.nextInt(accessiblePalette.size)]
+                    } else {
+                        // Fallback: pick black or white, whichever is more accessible
+                        val whiteContrast = contrastRatio(Color.White, bgColor)
+                        val blackContrast = contrastRatio(Color.Black, bgColor)
+                        if (whiteContrast > blackContrast) Color.White else Color.Black
+                    }
                 }
 
                 Box(
