@@ -18,9 +18,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FontDownload
 import androidx.compose.material.icons.filled.FormatColorText
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Palette
@@ -29,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -71,6 +75,7 @@ class MainActivity : ComponentActivity() {
                 var showTextDialog by remember { mutableStateOf(false) }
                 var showBackgroundColorDialog by remember { mutableStateOf(false) }
                 var showTextColorDialog by remember { mutableStateOf(false) }
+                var showFontDialog by remember { mutableStateOf(false) }
 
                 val balooTamma = FontFamily(Font(R.font.baloo_tamma, FontWeight.Normal))
 
@@ -87,6 +92,24 @@ class MainActivity : ComponentActivity() {
                     Color(0xFFFFC400), // Amber
                     Color(0xFFAA00FF)  // Deep Purple
                 )
+
+                // List of available fonts (assume TTFs are present in res/font/)
+                val fontOptions = listOf(
+                    "Baloo Tamma" to FontFamily(Font(R.font.baloo_tamma)),
+                    "Suez One" to FontFamily(Font(R.font.suez_one)),
+                    "Wendy One" to FontFamily(Font(R.font.wendy_one)),
+                    "Monoton" to FontFamily(Font(R.font.monoton)),
+                    "Kids Magazine" to FontFamily(Font(R.font.kids_magazine)),
+                    "Roboto" to FontFamily(Font(R.font.roboto)),
+                    "Lato" to FontFamily(Font(R.font.lato)),
+                    "Pacifico" to FontFamily(Font(R.font.pacifico)),
+                    "Lobster" to FontFamily(Font(R.font.lobster)),
+                    "Oswald" to FontFamily(Font(R.font.oswald)),
+                    "Indie Flower" to FontFamily(Font(R.font.indie_flower)),
+                    "Raleway" to FontFamily(Font(R.font.raleway))
+                )
+                var selectedFontIndex by remember { mutableStateOf(0) }
+                val selectedFontFamily = fontOptions[selectedFontIndex].second
 
                 // Contrast ratio calculation (WCAG)
                 fun contrastRatio(c1: Color, c2: Color): Double {
@@ -131,13 +154,29 @@ class MainActivity : ComponentActivity() {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Spacer(modifier = Modifier.height(24.dp))
-                        IconButton(onClick = { showTextDialog = true }, modifier = Modifier.size(64.dp)) {
-                            Icon(
-                                imageVector = Icons.Filled.FormatSize,
-                                contentDescription = "Change Text",
-                                modifier = Modifier.size(48.dp),
-                                tint = iconTint
-                            )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 24.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            IconButton(onClick = { showTextDialog = true }, modifier = Modifier.size(64.dp)) {
+                                Icon(
+                                    imageVector = Icons.Filled.FormatSize,
+                                    contentDescription = "Change Text",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = iconTint
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            IconButton(onClick = { showFontDialog = true }, modifier = Modifier.size(64.dp)) {
+                                Icon(
+                                    imageVector = Icons.Filled.FontDownload,
+                                    contentDescription = "Select Font",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = iconTint
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Box(
@@ -150,7 +189,7 @@ class MainActivity : ComponentActivity() {
                                 text = textToDisplay,
                                 color = Color(textColor),
                                 fontSize = 48.sp,
-                                fontFamily = balooTamma,
+                                fontFamily = selectedFontFamily,
                                 lineHeight = 60.sp,
                                 textAlign = TextAlign.Center,
                                 style = LocalTextStyle.current.copy(
@@ -244,6 +283,49 @@ class MainActivity : ComponentActivity() {
                             showTextColorDialog = false
                         },
                         onDismiss = { showTextColorDialog = false }
+                    )
+                }
+
+                if (showFontDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showFontDialog = false },
+                        title = { Text("Scegli un font") },
+                        text = {
+                            Column(
+                                modifier = Modifier.verticalScroll(rememberScrollState())
+                            ) {
+                                fontOptions.forEachIndexed { idx, (name, _) ->
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                selectedFontIndex = idx
+                                                showFontDialog = false
+                                            }
+                                            .padding(vertical = 0.5.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        RadioButton(
+                                            selected = idx == selectedFontIndex,
+                                            onClick = {
+                                                selectedFontIndex = idx
+                                                showFontDialog = false
+                                            }
+                                        )
+                                        Text(
+                                            name,
+                                            modifier = Modifier.padding(start = 8.dp),
+                                            fontFamily = fontOptions[idx].second,
+                                            fontSize = 22.sp
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {},
+                        dismissButton = {
+                            TextButton(onClick = { showFontDialog = false }) { Text("Annulla") }
+                        }
                     )
                 }
             }
