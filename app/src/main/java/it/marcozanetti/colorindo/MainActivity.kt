@@ -36,7 +36,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -51,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.marcozanetti.colorindo.ui.theme.ColorindoTheme
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -71,8 +71,43 @@ class MainActivity : ComponentActivity() {
 
                 val balooTamma = FontFamily(Font(R.font.baloo_tamma, FontWeight.Normal))
 
-                // Determine icon tint based on background color luminance
-                val iconTint = if (Color(backgroundColor).luminance() < 0.5f) Color.White else Color.Black
+                // Vibrant palette for icons
+                val iconPalette = listOf(
+                    Color(0xFFFFEB3B), // Yellow
+                    Color(0xFF00E5FF), // Cyan
+                    Color(0xFFD500F9), // Purple
+                    Color(0xFFFF3D00), // Orange
+                    Color(0xFF00C853), // Green
+                    Color(0xFFFF1744), // Red
+                    Color(0xFF1A237E), // Indigo
+                    Color(0xFF00B8D4), // Light Blue
+                    Color(0xFFFFC400), // Amber
+                    Color(0xFFAA00FF)  // Deep Purple
+                )
+
+                // Contrast ratio calculation (WCAG)
+                fun contrastRatio(c1: Color, c2: Color): Double {
+                    fun channel(v: Float): Double {
+                        val vNorm = v / 1.0f
+                        return if (vNorm <= 0.03928) vNorm / 12.92 else Math.pow(((vNorm + 0.055) / 1.055), 2.4)
+                    }
+                    val l1 = 0.2126 * channel(c1.red) + 0.7152 * channel(c1.green) + 0.0722 * channel(c1.blue)
+                    val l2 = 0.2126 * channel(c2.red) + 0.7152 * channel(c2.green) + 0.0722 * channel(c2.blue)
+                    val lighter = maxOf(l1, l2)
+                    val darker = minOf(l1, l2)
+                    return (lighter + 0.05) / (darker + 0.05)
+                }
+
+                val bgColor = Color(backgroundColor)
+                val accessiblePalette = iconPalette.filter { contrastRatio(it, bgColor) >= 3.0 }
+                val iconTint = if (accessiblePalette.isNotEmpty()) {
+                    accessiblePalette[Random.nextInt(accessiblePalette.size)]
+                } else {
+                    // Fallback: pick black or white, whichever is more accessible
+                    val whiteContrast = contrastRatio(Color.White, bgColor)
+                    val blackContrast = contrastRatio(Color.Black, bgColor)
+                    if (whiteContrast > blackContrast) Color.White else Color.Black
+                }
 
                 Box(
                     modifier = Modifier
