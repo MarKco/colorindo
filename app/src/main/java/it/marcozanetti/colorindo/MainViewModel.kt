@@ -4,28 +4,22 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.graphics.Color
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.Random
-
 
 class MainViewModel : ViewModel() {
 
-  private val _textToDisplay = MutableLiveData<String>()
-  val textToDisplay: LiveData<String> = _textToDisplay
+  private val _textToDisplay = MutableStateFlow("COLORINDO")
+  val textToDisplay: StateFlow<String> = _textToDisplay.asStateFlow()
 
-  private val _backgroundColor = MutableLiveData<Int>()
-  val backgroundColor: LiveData<Int> = _backgroundColor
+  private val _backgroundColor = MutableStateFlow(getRandomColor())
+  val backgroundColor: StateFlow<Int> = _backgroundColor.asStateFlow()
 
-  private val _textColor = MutableLiveData<Int>()
-  val textColor: LiveData<Int> = _textColor
-
-  init {
-    _textToDisplay.value = "COLORINDO"
-    _backgroundColor.value = getRandomColor()
-    _textColor.value = getRandomColor()
-  }
+  private val _textColor = MutableStateFlow(getRandomColor())
+  val textColor: StateFlow<Int> = _textColor.asStateFlow()
 
   fun changeText(text: String) {
     _textToDisplay.value = text
@@ -49,8 +43,7 @@ class MainViewModel : ViewModel() {
 
   private fun getRandomColor(): Int {
     val rnd = Random()
-    val color: Int = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
-    return color
+    return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
   }
 
   fun storeValuesToSharedPrefs(context: Context) {
@@ -58,15 +51,15 @@ class MainViewModel : ViewModel() {
     val myEdit = sharedPreferences.edit()
 
     myEdit.putString("textToDisplay", textToDisplay.value)
-    backgroundColor.value?.let { myEdit.putInt("backgroundColor", it) }
-    textColor.value?.let { myEdit.putInt("textColor", it) }
+    myEdit.putInt("backgroundColor", backgroundColor.value)
+    myEdit.putInt("textColor", textColor.value)
 
     myEdit.apply()
   }
 
   fun retrieveValuesFromSharedPrefs(context: Context) {
     val sharedPreferences: SharedPreferences = context.getSharedPreferences("ColorindoSharedPrefs", MODE_PRIVATE)
-    val textToDisplay = sharedPreferences.getString("textToDisplay", "COLORINDO")
+    val textToDisplay = sharedPreferences.getString("textToDisplay", "COLORINDO") ?: "COLORINDO"
     val backgroundColor = sharedPreferences.getInt("backgroundColor", getRandomColor())
     val textColor = sharedPreferences.getInt("textColor", getRandomColor())
 
@@ -74,6 +67,5 @@ class MainViewModel : ViewModel() {
     _backgroundColor.value = backgroundColor
     _textColor.value = textColor
   }
-
 }
 

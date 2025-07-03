@@ -1,136 +1,221 @@
 package it.marcozanetti.colorindo
 
-import android.graphics.Color
 import android.os.Bundle
-import android.text.InputFilter
-import android.text.InputFilter.AllCaps
-import android.util.Log
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.graphics.ColorUtils
-import androidx.lifecycle.ViewModelProvider
-import eltos.simpledialogfragment.SimpleDialog
-import eltos.simpledialogfragment.color.SimpleColorDialog
-import eltos.simpledialogfragment.color.SimpleColorDialog.COLORFUL_COLOR_PALLET
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import it.marcozanetti.colorindo.ui.theme.ColorindoTheme
 
-
-class MainActivity : AppCompatActivity(), SimpleDialog.OnDialogResultListener {
-
-    private val background: ConstraintLayout by lazy { findViewById(R.id.backgroundLayout) }
-    private val editableText: TextView by lazy { findViewById(R.id.editableText) }
-    private val changeBackgroundColorButton: ImageButton by lazy { findViewById(R.id.changeBackgroundColorButton) }
-    private val changeTextColorButton: ImageButton by lazy { findViewById(R.id.changeTextColorButton) }
-    private val changeTextButton: ImageButton by lazy { findViewById(R.id.changeTextButton) }
-
-    private val BACKGROUND_COLOR: String = "BACKGROUND_COLOR"
-    private val TEXT_COLOR: String = "TEXT_COLOR"
-    private val TEXT_CONTENT: String = "TEXT_CONTENT"
-
-    lateinit var viewModel: MainViewModel
+class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.retrieveValuesFromSharedPrefs(this)
+        setContent {
+            ColorindoTheme {
+                val context = LocalContext.current
+                val backgroundColor by viewModel.backgroundColor.collectAsState()
+                val textColor by viewModel.textColor.collectAsState()
+                val textToDisplay by viewModel.textToDisplay.collectAsState()
 
-        viewModel.backgroundColor.observeForever {
-            background.setBackgroundColor(ColorUtils.blendARGB(editableText.solidColor, it, 1.0f))
-        }
+                var showTextDialog by remember { mutableStateOf(false) }
+                var showBackgroundColorDialog by remember { mutableStateOf(false) }
+                var showTextColorDialog by remember { mutableStateOf(false) }
 
-        viewModel.textColor.observeForever {
-            editableText.setTextColor(ColorUtils.blendARGB(editableText.solidColor, it, 1.0f))
-        }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(backgroundColor))
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            viewModel.setBackgroundToRandomColor()
+                        }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = 24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Spacer(modifier = Modifier.height(24.dp))
+                        IconButton(onClick = { showTextDialog = true }, modifier = Modifier.size(64.dp)) {
+                            Icon(
+                                imageVector = Icons.Filled.FormatSize,
+                                contentDescription = "Change Text",
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = textToDisplay,
+                                color = Color(textColor),
+                                fontSize = 48.sp,
+                                modifier = Modifier
+                                    .clickable(
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    ) {
+                                        viewModel.setTextColorToRandomColor()
+                                    },
+                                maxLines = 3
+                            )
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            IconButton(onClick = { showBackgroundColorDialog = true }, modifier = Modifier.size(64.dp)) {
+                                Icon(
+                                    painter = painterResource(id = R.mipmap.background_color),
+                                    contentDescription = "Change Background Color",
+                                    modifier = Modifier.size(48.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(32.dp))
+                            IconButton(onClick = { showTextColorDialog = true }, modifier = Modifier.size(64.dp)) {
+                                Icon(
+                                    painter = painterResource(id = R.mipmap.text_color),
+                                    contentDescription = "Change Text Color",
+                                    modifier = Modifier.size(48.dp)
+                                )
+                            }
+                        }
+                    }
+                }
 
-        background.setBackgroundColor(viewModel.backgroundColor.value!!)
-        editableText.setTextColor(viewModel.textColor.value!!)
-        editableText.text = viewModel.textToDisplay.value
+                if (showTextDialog) {
+                    var input by remember { mutableStateOf(textToDisplay) }
+                    AlertDialog(
+                        onDismissRequest = { showTextDialog = false },
+                        title = { Text("SCEGLI LA PAROLA") },
+                        text = {
+                            OutlinedTextField(
+                                value = input,
+                                onValueChange = { input = it.uppercase() },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.Characters,
+                                    imeAction = ImeAction.Done
+                                ),
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                viewModel.changeText(input)
+                                showTextDialog = false
+                            }) { Text("OK") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showTextDialog = false }) { Text("Annulla") }
+                        }
+                    )
+                }
 
-        background.setOnClickListener {
-            viewModel.setBackgroundToRandomColor()
-        }
+                if (showBackgroundColorDialog) {
+                    ColorPickerDialog(
+                        onColorSelected = {
+                            viewModel.changeBackgroundColor(it)
+                            showBackgroundColorDialog = false
+                        },
+                        onDismiss = { showBackgroundColorDialog = false }
+                    )
+                }
 
-        editableText.setOnClickListener {
-            viewModel.setTextColorToRandomColor()
-        }
-
-        changeBackgroundColorButton.setOnClickListener {
-            getColor(BACKGROUND_COLOR)
-        }
-
-        changeTextColorButton.setOnClickListener {
-            getColor(TEXT_COLOR)
-        }
-
-        changeTextButton.setOnClickListener {
-            //Shows a dialog with a text field pre-filled with the current text and allowing the user to change it
-            showTextChangeDialog {
-                viewModel.changeText(it)
-                editableText.text = it
-            }
-        }
-    }
-
-    private fun getColor(tag: String) {
-        SimpleColorDialog.build()
-            .choiceMode(SimpleColorDialog.SINGLE_CHOICE_DIRECT)
-            .colorPreset(COLORFUL_COLOR_PALLET)
-            .title(R.string.pick_a_color)
-            .colorPreset(Color.RED)
-            .allowCustom(true)
-            .show(this, tag)
-    }
-
-    private fun showTextChangeDialog(updateText: (String) -> Unit) {
-        val updatedText = EditText(this).apply {
-            filters = arrayOf<InputFilter>(AllCaps())
-            //select all on focus
-            setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
-                    selectAll()
+                if (showTextColorDialog) {
+                    ColorPickerDialog(
+                        onColorSelected = {
+                            viewModel.changeTextColor(it)
+                            showTextColorDialog = false
+                        },
+                        onDismiss = { showTextColorDialog = false }
+                    )
                 }
             }
-            setSelectAllOnFocus(true)
-            setLines(1)
-            maxLines = 1
-            setSingleLine()
-            setText(viewModel.textToDisplay.value)
         }
-
-        AlertDialog.Builder(this)
-            .setMessage("SCEGLI LA PAROLA")
-            .setView(updatedText)
-            .setPositiveButton("OK") { dialog, whichButton ->
-                val updatedTextFromDialog: String = updatedText.text.toString()
-                updateText(updatedTextFromDialog)
-            }
-            .show()
-
-    }
-
-    override fun onResult(dialogTag: String, which: Int, extras: Bundle): Boolean {
-        when(dialogTag) {
-            BACKGROUND_COLOR -> {
-                viewModel.changeBackgroundColor(extras.getInt(SimpleColorDialog.COLOR))
-                return true
-            }
-            TEXT_COLOR -> {
-                viewModel.changeTextColor(extras.getInt(SimpleColorDialog.COLOR))
-                return true
-            }
-            else ->
-                Log.d("Colorindo", "Didn't expect to end up here")
-        }
-        return false
     }
 
     override fun onStop() {
         super.onStop()
         viewModel.storeValuesToSharedPrefs(this)
     }
+}
+
+@Composable
+fun ColorPickerDialog(onColorSelected: (Int) -> Unit, onDismiss: () -> Unit) {
+    // For simplicity, show a few preset colors. You can expand this as needed.
+    val colors = listOf(
+        Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, Color.Black, Color.White
+    )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Scegli un colore") },
+        text = {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                colors.forEach { color ->
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(color, RoundedCornerShape(20.dp))
+                            .clickable { onColorSelected(color.toArgb()) }
+                    )
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text("Annulla") }
+        }
+    )
 }
