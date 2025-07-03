@@ -20,6 +20,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FormatColorText
+import androidx.compose.material.icons.filled.FormatSize
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -130,7 +133,7 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.height(24.dp))
                         IconButton(onClick = { showTextDialog = true }, modifier = Modifier.size(64.dp)) {
                             Icon(
-                                painter = painterResource(id = R.drawable.format_size),
+                                imageVector = Icons.Filled.FormatSize,
                                 contentDescription = "Change Text",
                                 modifier = Modifier.size(48.dp),
                                 tint = iconTint
@@ -176,7 +179,7 @@ class MainActivity : ComponentActivity() {
                         ) {
                             IconButton(onClick = { showBackgroundColorDialog = true }, modifier = Modifier.size(64.dp)) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.palette),
+                                    imageVector = Icons.Filled.Palette,
                                     contentDescription = "Change Background Color",
                                     modifier = Modifier.size(48.dp),
                                     tint = iconTint
@@ -185,7 +188,7 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.width(32.dp))
                             IconButton(onClick = { showTextColorDialog = true }, modifier = Modifier.size(64.dp)) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.palette),
+                                    imageVector = Icons.Filled.FormatColorText,
                                     contentDescription = "Change Text Color",
                                     modifier = Modifier.size(48.dp),
                                     tint = iconTint
