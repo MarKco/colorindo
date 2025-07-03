@@ -191,35 +191,38 @@ class MainActivity : ComponentActivity() {
                             val minFontSize = 24.sp
                             val maxFontSize = 96.sp
                             val lineHeight = ((minFontSize.value + maxFontSize.value) / 2 * 1.5f).sp
-
-                            BasicText(
-                                text = textToDisplay,
-                                modifier = Modifier.padding(start = 8.dp)
-                                    .clickable(
-                                    enabled = true,
-                                    indication = null,
-                                    interactionSource = remember { MutableInteractionSource() }
-                                ) {
-                                    viewModel.setTextColorToRandomColor()
-                                },
-                                style = LocalTextStyle.current.copy(
-                                    color = Color(textColor),
-                                    fontFamily = selectedFontFamily,
-                                    textAlign = TextAlign.Center,
-                                    platformStyle = PlatformTextStyle(
-                                        includeFontPadding = false
-                                    ),
-                                    lineHeight = lineHeight,
+                            Column(
+                                modifier = Modifier.verticalScroll(rememberScrollState())
+                            ) {
+                                BasicText(
+                                    text = textToDisplay,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                        .clickable(
+                                            enabled = true,
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            viewModel.setTextColorToRandomColor()
+                                        },
+                                    style = LocalTextStyle.current.copy(
+                                        color = Color(textColor),
+                                        fontFamily = selectedFontFamily,
+                                        textAlign = TextAlign.Center,
+                                        platformStyle = PlatformTextStyle(
+                                            includeFontPadding = false
+                                        ),
+                                        lineHeight = lineHeight,
 //                                    lineHeightStyle = LineHeightStyle(
 //                                        alignment = LineHeightStyle.Alignment.Center,
 //                                        trim = LineHeightStyle.Trim.None
 //                                    )
-                                ),
-                                autoSize = TextAutoSize.StepBased(
-                                    minFontSize = minFontSize,
-                                    maxFontSize = maxFontSize
+                                    ),
+                                    autoSize = TextAutoSize.StepBased(
+                                        minFontSize = minFontSize,
+                                        maxFontSize = maxFontSize
+                                    )
                                 )
-                            )
+                            }
                         }
                         Row(
                             modifier = Modifier
