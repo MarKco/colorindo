@@ -20,7 +20,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FontDownload
@@ -52,7 +54,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -151,15 +152,15 @@ class MainActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(bottom = 24.dp),
+                            .padding(bottom = 12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 24.dp),
+                                .padding(top = 8.dp),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             IconButton(onClick = { showTextDialog = true }, modifier = Modifier.size(64.dp)) {
@@ -187,30 +188,37 @@ class MainActivity : ComponentActivity() {
                                 .fillMaxWidth(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
+                            val minFontSize = 24.sp
+                            val maxFontSize = 96.sp
+                            val lineHeight = ((minFontSize.value + maxFontSize.value) / 2 * 1.5f).sp
+
+                            BasicText(
                                 text = textToDisplay,
-                                color = Color(textColor),
-                                fontSize = 48.sp,
-                                fontFamily = selectedFontFamily,
-                                lineHeight = 60.sp,
-                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(start = 8.dp)
+                                    .clickable(
+                                    enabled = true,
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() }
+                                ) {
+                                    viewModel.setTextColorToRandomColor()
+                                },
                                 style = LocalTextStyle.current.copy(
+                                    color = Color(textColor),
+                                    fontFamily = selectedFontFamily,
+                                    textAlign = TextAlign.Center,
                                     platformStyle = PlatformTextStyle(
                                         includeFontPadding = false
                                     ),
-                                    lineHeightStyle = LineHeightStyle(
-                                        alignment = LineHeightStyle.Alignment.Center,
-                                        trim = LineHeightStyle.Trim.None
-                                    )
+                                    lineHeight = lineHeight,
+//                                    lineHeightStyle = LineHeightStyle(
+//                                        alignment = LineHeightStyle.Alignment.Center,
+//                                        trim = LineHeightStyle.Trim.None
+//                                    )
                                 ),
-                                modifier = Modifier
-                                    .clickable(
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    ) {
-                                        viewModel.setTextColorToRandomColor()
-                                    },
-                                maxLines = 3
+                                autoSize = TextAutoSize.StepBased(
+                                    minFontSize = minFontSize,
+                                    maxFontSize = maxFontSize
+                                )
                             )
                         }
                         Row(
