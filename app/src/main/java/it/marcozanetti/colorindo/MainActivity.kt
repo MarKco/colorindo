@@ -25,10 +25,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FontDownload
 import androidx.compose.material.icons.filled.FormatColorText
-import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.TextFields
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,6 +73,7 @@ class MainActivity : ComponentActivity() {
                 val backgroundColor by viewModel.backgroundColor.collectAsState()
                 val textColor by viewModel.textColor.collectAsState()
                 val textToDisplay by viewModel.textToDisplay.collectAsState()
+                val isUppercase by viewModel.isUppercase.collectAsState()
 
                 var showTextDialog by remember { mutableStateOf(false) }
                 var showBackgroundColorDialog by remember { mutableStateOf(false) }
@@ -160,13 +162,13 @@ class MainActivity : ComponentActivity() {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 8.dp),
+                                .padding(top = 24.dp),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             IconButton(onClick = { showTextDialog = true }, modifier = Modifier.size(64.dp)) {
                                 Icon(
-                                    imageVector = Icons.Filled.FormatSize,
-                                    contentDescription = "Change Text",
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Edit Text",
                                     modifier = Modifier.size(48.dp),
                                     tint = iconTint
                                 )
@@ -176,6 +178,15 @@ class MainActivity : ComponentActivity() {
                                 Icon(
                                     imageVector = Icons.Filled.FontDownload,
                                     contentDescription = "Select Font",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = iconTint
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            IconButton(onClick = { viewModel.setIsUppercase(!isUppercase) }, modifier = Modifier.size(64.dp)) {
+                                Icon(
+                                    imageVector = Icons.Filled.TextFields,
+                                    contentDescription = if (isUppercase) "Switch to lowercase" else "Switch to uppercase",
                                     modifier = Modifier.size(48.dp),
                                     tint = iconTint
                                 )
@@ -195,7 +206,7 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.verticalScroll(rememberScrollState())
                             ) {
                                 BasicText(
-                                    text = textToDisplay,
+                                    text = if (isUppercase) textToDisplay.uppercase() else textToDisplay.lowercase(),
                                     modifier = Modifier.padding(horizontal = 8.dp)
                                         .clickable(
                                             enabled = true,
@@ -212,10 +223,6 @@ class MainActivity : ComponentActivity() {
                                             includeFontPadding = false
                                         ),
                                         lineHeight = lineHeight,
-//                                    lineHeightStyle = LineHeightStyle(
-//                                        alignment = LineHeightStyle.Alignment.Center,
-//                                        trim = LineHeightStyle.Trim.None
-//                                    )
                                     ),
                                     autoSize = TextAutoSize.StepBased(
                                         minFontSize = minFontSize,

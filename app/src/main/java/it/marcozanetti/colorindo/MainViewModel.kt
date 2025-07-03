@@ -28,6 +28,10 @@ class MainViewModel(
   private val _selectedFontIndex = MutableStateFlow(savedStateHandle.get<Int>(FONT_INDEX_KEY) ?: 0)
   val selectedFontIndex: StateFlow<Int> = _selectedFontIndex.asStateFlow()
 
+  private val UPPERCASE_KEY = "is_uppercase"
+  private val _isUppercase = MutableStateFlow(savedStateHandle.get<Boolean>(UPPERCASE_KEY) ?: true)
+  val isUppercase: StateFlow<Boolean> = _isUppercase.asStateFlow()
+
   fun changeText(text: String) {
     _textToDisplay.value = text
   }
@@ -53,6 +57,11 @@ class MainViewModel(
     savedStateHandle[FONT_INDEX_KEY] = index
   }
 
+  fun setIsUppercase(value: Boolean) {
+    _isUppercase.value = value
+    savedStateHandle[UPPERCASE_KEY] = value
+  }
+
   private fun getRandomColor(): Int {
     val rnd = Random()
     return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
@@ -66,6 +75,7 @@ class MainViewModel(
     myEdit.putInt("backgroundColor", backgroundColor.value)
     myEdit.putInt("textColor", textColor.value)
     myEdit.putInt("fontIndex", selectedFontIndex.value)
+    myEdit.putBoolean("isUppercase", isUppercase.value)
 
     myEdit.apply()
   }
@@ -76,11 +86,13 @@ class MainViewModel(
     val backgroundColor = sharedPreferences.getInt("backgroundColor", getRandomColor())
     val textColor = sharedPreferences.getInt("textColor", getRandomColor())
     val fontIndex = sharedPreferences.getInt("fontIndex", 0)
+    val isUppercasePref = sharedPreferences.getBoolean("isUppercase", true)
 
     _textToDisplay.value = textToDisplay
     _backgroundColor.value = backgroundColor
     _textColor.value = textColor
     setSelectedFontIndex(fontIndex)
+    setIsUppercase(isUppercasePref)
   }
 }
 
