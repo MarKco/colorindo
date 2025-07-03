@@ -20,11 +20,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,14 +36,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import it.marcozanetti.colorindo.ui.theme.ColorindoTheme
@@ -68,6 +71,9 @@ class MainActivity : ComponentActivity() {
 
                 val balooTamma = FontFamily(Font(R.font.baloo_tamma, FontWeight.Normal))
 
+                // Determine icon tint based on background color luminance
+                val iconTint = if (Color(backgroundColor).luminance() < 0.5f) Color.White else Color.Black
+
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -89,9 +95,10 @@ class MainActivity : ComponentActivity() {
                         Spacer(modifier = Modifier.height(24.dp))
                         IconButton(onClick = { showTextDialog = true }, modifier = Modifier.size(64.dp)) {
                             Icon(
-                                imageVector = Icons.Filled.FormatSize,
+                                painter = painterResource(id = R.drawable.format_size),
                                 contentDescription = "Change Text",
-                                modifier = Modifier.size(48.dp)
+                                modifier = Modifier.size(48.dp),
+                                tint = iconTint
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -106,6 +113,17 @@ class MainActivity : ComponentActivity() {
                                 color = Color(textColor),
                                 fontSize = 48.sp,
                                 fontFamily = balooTamma,
+                                lineHeight = 60.sp,
+                                textAlign = TextAlign.Center,
+                                style = LocalTextStyle.current.copy(
+                                    platformStyle = PlatformTextStyle(
+                                        includeFontPadding = false
+                                    ),
+                                    lineHeightStyle = LineHeightStyle(
+                                        alignment = LineHeightStyle.Alignment.Center,
+                                        trim = LineHeightStyle.Trim.None
+                                    )
+                                ),
                                 modifier = Modifier
                                     .clickable(
                                         indication = null,
@@ -123,17 +141,19 @@ class MainActivity : ComponentActivity() {
                         ) {
                             IconButton(onClick = { showBackgroundColorDialog = true }, modifier = Modifier.size(64.dp)) {
                                 Icon(
-                                    painter = painterResource(id = R.mipmap.background_color),
+                                    painter = painterResource(id = R.drawable.palette),
                                     contentDescription = "Change Background Color",
-                                    modifier = Modifier.size(48.dp)
+                                    modifier = Modifier.size(48.dp),
+                                    tint = iconTint
                                 )
                             }
                             Spacer(modifier = Modifier.width(32.dp))
                             IconButton(onClick = { showTextColorDialog = true }, modifier = Modifier.size(64.dp)) {
                                 Icon(
-                                    painter = painterResource(id = R.mipmap.text_color),
+                                    painter = painterResource(id = R.drawable.palette),
                                     contentDescription = "Change Text Color",
-                                    modifier = Modifier.size(48.dp)
+                                    modifier = Modifier.size(48.dp),
+                                    tint = iconTint
                                 )
                             }
                         }
@@ -200,22 +220,57 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun ColorPickerDialog(onColorSelected: (Int) -> Unit, onDismiss: () -> Unit) {
-    // For simplicity, show a few preset colors. You can expand this as needed.
+    // Expanded palette with more vibrant and varied colors
     val colors = listOf(
-        Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, Color.Black, Color.White
+        Color.Red, Color.Green, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, Color.Black, Color.White,
+        Color(0xFFFF9800), // Orange
+        Color(0xFF4CAF50), // Green
+        Color(0xFF2196F3), // Blue
+        Color(0xFFFFEB3B), // Yellow
+        Color(0xFF9C27B0), // Purple
+        Color(0xFFFF5722), // Deep Orange
+        Color(0xFF795548), // Brown
+        Color(0xFF607D8B), // Blue Grey
+        Color(0xFF00BCD4), // Cyan
+        Color(0xFF8BC34A), // Light Green
+        Color(0xFFFFC107), // Amber
+        Color(0xFF3F51B5), // Indigo
+        Color(0xFFE91E63), // Pink
+        Color(0xFFCDDC39), // Lime
+        Color(0xFF673AB7), // Deep Purple
+        Color(0xFF009688), // Teal
+        Color(0xFFBDBDBD), // Grey
+        Color(0xFFFFA726), // Light Orange
+        Color(0xFFA1887F), // Light Brown
+        Color(0xFFB39DDB), // Light Purple
+        Color(0xFF80CBC4), // Light Teal
+        Color(0xFFFFCDD2), // Light Red
+        Color(0xFFDCEDC8), // Light Green
+        Color(0xFFBBDEFB), // Light Blue
+        Color(0xFFFFF9C4), // Light Yellow
+        Color(0xFFD1C4E9), // Light Violet
+        Color(0xFFFFF8E1)  // Light Cream
     )
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text("Scegli un colore") },
         text = {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                colors.forEach { color ->
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(color, RoundedCornerShape(20.dp))
-                            .clickable { onColorSelected(color.toArgb()) }
-                    )
+            Column(Modifier.fillMaxWidth()) {
+                colors.chunked(6).forEach { rowColors ->
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        rowColors.forEach { color ->
+                            Box(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(color, RoundedCornerShape(20.dp))
+                                    .clickable { onColorSelected(color.toArgb()) }
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(8.dp))
                 }
             }
         },
